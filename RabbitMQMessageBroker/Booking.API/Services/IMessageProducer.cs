@@ -2,6 +2,6 @@
 {
     public interface IMessageProducer
     {
-        public void SendingMessage<T>(T message);
+        public void PublishMessage<T>(T message);
     }
 }

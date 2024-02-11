@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Linq;
 using System.Text;
-using System.Text.Json;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 
@@ -11,17 +10,7 @@ namespace TicketProcessor
     {
         static void Main(string[] args)
         {
-            
-            var factory = new ConnectionFactory()
-            {
-                HostName = "localhost",
-                UserName = "guest",
-                Password = "guest",
-                VirtualHost = "/",
-            };
-            var conn = factory.CreateConnection();
-            using var channel = conn.CreateModel();
-
+            var channel = RabbitMQConsumerConnection.RabbitMQConsumerConnection.CreateChannel();
             var consumer = new EventingBasicConsumer(channel);
             consumer.Received += (model, eventArg) =>
             {

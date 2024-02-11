@@ -29,7 +29,8 @@ namespace Booking.API
         {
 
             services.AddControllers();
-            services.AddScoped<IMessageProducer, MessageProducer>(_ => new MessageProducer(Configuration));
+            services.AddSingleton<IRabbitMqConnectionService, RabbitMqConnectionService>(_ => new RabbitMqConnectionService(Configuration));
+            services.AddScoped<IMessageProducer, MessageProducer>();
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Booking.API", Version = "v1" });

@@ -32,7 +32,7 @@ namespace Booking.API.Controllers
         {
             _logger.LogInformation($"Requesting a Booking: {JsonSerializer.Serialize(request)}");
             _bookings.Add(request);
-            _producer.SendingMessage(request);
+            _producer.PublishMessage(request);
             return Ok(new {Status="Success"});
         }
         
