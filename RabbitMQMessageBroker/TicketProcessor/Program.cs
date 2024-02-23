@@ -11,16 +11,22 @@ namespace TicketProcessor
         static void Main(string[] args)
         {
             var channel = RabbitMQConsumerConnection.RabbitMQConsumerConnection.CreateChannel();
+
+            // Set the prefetch count for the consumer
+            channel.BasicQos(0, 3, false);
+
             var consumer = new EventingBasicConsumer(channel);
+
             consumer.Received += (model, eventArg) =>
             {
                 //byte array[]
                 var body = eventArg.Body.ToArray();
                 var message = Encoding.UTF8.GetString(body);
                 Console.WriteLine($"Messages have received:{message}");
-            };
 
-            channel.BasicConsume("booking", true, consumer);
+                channel.BasicAck(eventArg.DeliveryTag, false); //Acknowledge the message
+            };
+            channel.BasicConsume("booking", false, consumer);
             Console.ReadKey();
         }
     }
