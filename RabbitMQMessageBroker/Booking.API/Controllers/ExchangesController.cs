@@ -10,12 +10,12 @@ namespace Booking.API.Controllers
     [Route("[controller]")]
     public class ExchangesController : ControllerBase
     {
-        private readonly ILogger<BookingController> _logger;
+        private readonly ILogger<ExchangesController> _logger;
         private readonly ExchangeProducer _producer;
 
         private readonly List<Entities.Booking> _bookings = new ();
 
-        public ExchangesController(ILogger<BookingController> logger, ExchangeProducer producer)
+        public ExchangesController(ILogger<ExchangesController> logger, ExchangeProducer producer)
         {
             _logger = logger;
             _producer = producer;
@@ -36,12 +36,12 @@ namespace Booking.API.Controllers
             return Ok(new {Status="Success"});
         }
         
-        [HttpPost("route-exchange")]
-        public IActionResult PostRouteExchangeAsync([FromBody] Entities.Booking request)
+        [HttpPost("headers-exchange")]
+        public IActionResult PostHeadersExchangeAsync([FromBody] Entities.Booking request)
         {
-            _logger.LogInformation($"Fan-exchange: {JsonSerializer.Serialize(request)}");
+            _logger.LogInformation($"Headers-exchange: {JsonSerializer.Serialize(request)}");
             _bookings.Add(request);
-            _producer.PublishRoutingExchangeMessage(request);
+            _producer.PublishHeadersExchangeMessage(request);
             return Ok(new {Status="Success"});
         }
         
