@@ -1,1 +1,12 @@
-# RabbitMQ-DotNet
+# Backend Features:
+- [x] RabbitMQ
+- [ ] Kafka
+- [ ] MassTransit
+- [ ] Event Driven Architecture
+- [ ] gRPC
+- [ ] Elastic Stack
+- [ ] WebHook
+- [ ] WebSocket
+- [ ] SignalR
+- [ ] SSE
+- [ ] Distributed Cache
