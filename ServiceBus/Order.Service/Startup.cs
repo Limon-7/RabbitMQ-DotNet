@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Contracts;
+using MassTransit;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -11,6 +13,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
+using Order.Service.Consumers;
 
 namespace Order.Service
 {
@@ -28,6 +31,39 @@ namespace Order.Service
         {
 
             services.AddControllers();
+
+            services.AddMassTransit(x =>
+            {
+                x.AddConsumer<OrderPlacedConsumer>();
+                x.AddConsumer<CheckOrderStatusConsumer>();
+                    // .Endpoint(e => e.Name = "check-order-status");
+                x.AddRequestClient<CheckOrderStatus>();
+                    // (new Uri("exchange:check-order-status"));
+                
+                x.UsingRabbitMq((context,config) =>
+                {
+                    config.Host("localhost","/", c =>
+                    {
+                        c.Username("guest");
+                        c.Password("guest");
+                    });
+                    // config.ReceiveEndpoint("queue:order-placed", e =>
+                    // {
+                    //     e.Consumer<OrderPlacedConsumer>(context);
+                    // });
+                    //
+                    // config.ReceiveEndpoint("check-order-status", e =>
+                    // {
+                    //     e.Consumer<CheckOrderStatusConsumer>(context);
+                    // });
+                    //
+                    config.ConfigureEndpoints(context);
+                });
+                
+            });
+
+            services.AddMassTransitHostedService();
+            
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Order.Service", Version = "v1" });

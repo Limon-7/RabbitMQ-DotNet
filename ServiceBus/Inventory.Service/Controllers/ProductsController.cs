@@ -1,7 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
+using Contracts;
+using Inventory.Service.Commands;
+using MassTransit;
+using MassTransit.RabbitMqTransport.Integration;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
@@ -11,29 +12,22 @@ namespace Inventory.Service.Controllers
     [Route("[controller]")]
     public class ProductsController : ControllerBase
     {
-        private static readonly string[] Summaries = new[]
-        {
-            "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-        };
-
         private readonly ILogger<ProductsController> _logger;
+        private readonly IPublishEndpoint _publisher;
 
-        public ProductsController(ILogger<ProductsController> logger)
+        public ProductsController(ILogger<ProductsController> logger, IPublishEndpoint publisher)
         {
             _logger = logger;
+            _publisher = publisher;
         }
 
-        [HttpGet]
-        public IEnumerable<WeatherForecast> Get()
+        [HttpPost]
+        [Route("CreateProduct")]
+        public Task<string> CreateProductCommand([FromBody] CreateProductCommand command)
         {
-            var rng = new Random();
-            return Enumerable.Range(1, 5).Select(index => new WeatherForecast
-            {
-                Date = DateTime.Now.AddDays(index),
-                TemperatureC = rng.Next(-20, 55),
-                Summary = Summaries[rng.Next(Summaries.Length)]
-            })
-            .ToArray();
+            _publisher.Publish<ProductCreationPlaced>(new ProductCreationPlaced(command.Id, command.Code,
+                command.ProductName));
+            return Task.FromResult("Successful");
         }
     }
 }
