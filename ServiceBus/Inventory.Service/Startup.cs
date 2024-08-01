@@ -2,6 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Contracts;
+using Inventory.Service.Consumers;
+using MassTransit;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -28,6 +31,27 @@ namespace Inventory.Service
         {
 
             services.AddControllers();
+            services.AddMassTransit(x=>
+            {
+                x.AddConsumer<InventoryManagementConsumer>();
+                x.UsingRabbitMq((ctx,cfg)=>{
+
+                    cfg.Host("localhost","/" , c=>
+                    {
+                        c.Username("guest");
+                        c.Password("guest");
+                    });
+                    
+                    cfg.ReceiveEndpoint("Queue:update-product-stock", e =>
+                    {
+                        e.Consumer<InventoryManagementConsumer>(ctx);
+                    });
+                    
+                    // cfg.ConfigureEndpoints(ctx);
+                });
+            });
+            services.AddMassTransitHostedService();
+            
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Inventory.Service", Version = "v1" });
