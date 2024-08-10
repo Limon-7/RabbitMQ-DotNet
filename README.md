@@ -1,12 +1,12 @@
 # Backend Features:
 - [x] RabbitMQ
 - [ ] Kafka
-- [ ] MassTransit
+- [x] MassTransit
 - [ ] Event Driven Architecture
-- [ ] gRPC
+- [x] gRPC
 - [ ] Elastic Stack
-- [ ] WebHook
+- [x] WebHook
 - [ ] WebSocket
 - [ ] SignalR
-- [ ] SSE
-- [ ] Distributed Cache
+- [x] SSE
+- [ ] Cache
