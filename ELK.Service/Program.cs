@@ -1,6 +1,25 @@
 using ELK.Service.Infrastructure;
+using Serilog;
+using Serilog.Sinks.Elasticsearch;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Host.UseSerilog((context, configuration) =>
+{
+    configuration.Enrich.FromLogContext()
+        .Enrich.With()
+        .WriteTo.Console()
+        .WriteTo.Elasticsearch(
+            new ElasticsearchSinkOptions(new Uri(context.Configuration["ELKConfig:Uri"]!))
+            {
+                IndexFormat =
+                    $"{context.Configuration["ApplicationName"]}-logs-{context.HostingEnvironment.EnvironmentName?.ToLower().Replace(".", "-")}-{DateTime.UtcNow:yyyy-MM}",
+                AutoRegisterTemplate = true,
+                NumberOfReplicas = 2,
+                NumberOfShards = 1
+            }).Enrich.WithProperty("Environment", context.HostingEnvironment.EnvironmentName).ReadFrom
+        .Configuration(context.Configuration);
+});
 
 // Add services to the container.
 

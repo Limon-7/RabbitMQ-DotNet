@@ -9,14 +9,17 @@ namespace ELK.Service.Controllers;
 public class CatalogsController : ControllerBase
 {
     private readonly IElasticSearchService<Catalog> _elasticSearchService;
+    private readonly ILogger<CatalogsController> _logger;
 
-    public CatalogsController(IElasticSearchService<Catalog> elasticSearchService)
+    public CatalogsController(IElasticSearchService<Catalog> elasticSearchService, ILogger<CatalogsController> logger)
     {
         _elasticSearchService = elasticSearchService;
+        _logger = logger;
     }
     [HttpGet]
     public async Task<IActionResult> GetAllAsync(string keyword)
     {
+        _logger.LogInformation($"Requesting Search: {keyword}");
         var response = await _elasticSearchService.GetAllDocumentsAsync(keyword);
         return Ok(response);
     }
