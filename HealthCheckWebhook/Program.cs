@@ -30,7 +30,7 @@ app.MapControllers();
 app.UseRouting()
     .UseEndpoints(config =>
     {
-        config.MapHealthChecks("/healthz", new HealthCheckOptions
+        config.MapHealthChecks("/health", new HealthCheckOptions
         {
             Predicate = _ => true,
             ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse

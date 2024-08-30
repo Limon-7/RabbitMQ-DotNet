@@ -14,7 +14,15 @@ public class HealthChecksController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetHealthChecks()
+    public async Task<IActionResult> GetAsync()
+    {
+        var response= await Task.FromResult(0);
+        return Ok(new {Statue=true});
+    }
+    [HttpPost]
+    [NonAction]
+    // This the webhook endpoints
+    public async Task<IActionResult> PostAsync()
     {
         var response= await Task.FromResult(0);
        return Ok(new {Statue=true});
