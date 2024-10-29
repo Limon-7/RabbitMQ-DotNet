@@ -1,0 +1,18 @@
+﻿syntax = "proto3";
+option csharp_namespace = "OrderService";
+
+
+package order;
+service OrderService {
+  rpc SubmitOrder (OrderRequest) returns (OrderResponse);
+}
+
+message OrderRequest {
+  string orderId = 1;
+  double amount = 2;
+  string paymentMethod = 3; // "credit", "paypal", etc.
+}
+
+message OrderResponse {
+  string status = 1; // "Order Submitted" or "Failed"
+}

@@ -1,0 +1,18 @@
+﻿syntax = "proto3";
+
+option csharp_namespace = "PaymentService";
+package payment;
+
+service PaymentService {
+  rpc ProcessPayment (PaymentRequest) returns (PaymentResponse);
+}
+
+message PaymentRequest {
+  string orderId = 1;
+  double amount = 2;
+  string paymentMethod = 3;
+}
+
+message PaymentResponse {
+  string paymentStatus = 1; // "Success" or "Failure"
+}
