@@ -17,21 +17,29 @@ namespace Order.Service.Controllers
         private readonly ILogger<OrdersController> _logger;
         private readonly IPublishEndpoint _publisher;
         private readonly IRequestClient<CheckOrderStatus> _client;
+        private readonly IBus _bus;
 
         public OrdersController(ILogger<OrdersController> logger, IPublishEndpoint publisher,
-            IRequestClient<CheckOrderStatus> client)
+            IRequestClient<CheckOrderStatus> client, IBus bus)
         {
             _logger = logger;
             _publisher = publisher;
             _client = client;
+            _bus = bus;
         }
 
         [HttpPost]
         [Route("CreateOrder")]
-        public Task<string> CreateProductCommand([FromBody] CreateOrderCommand command)
+        public async Task<IActionResult> CreateProductCommand([FromBody] CreateOrderCommand command)
         {
-            _publisher.Publish(new OrderPlaced(101, "Limon"));
-            return Task.FromResult("Successful");
+            await _publisher.Publish(new OrderPlaced(101, "Limon")); 
+            await _bus.Send(new OrderPlaced(101, "Limon"),
+                context =>
+                {
+                    context.Headers.Set("correlation-id", Guid.NewGuid());
+                    context.Headers.Set("event-source", "OrderService");
+                }); 
+            return Ok("Successful");
         }
 
         [HttpPost]
